@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        .anime-card {
+            border: 1px solid #ccc;
+            background-color: white;
+            padding: 1rem;
+            margin: 1rem;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: calc(25% - 2rem);
+        }
+    </style>
+
+</head>
+<body class="bg-zinc-900">
+    <nav class="flex pt-6 px-6">
+        <div class="text-4xl text-slate-50">Anime<span class="text-rose-800">Chan</span> </div>
+        <ul class=" flex inline-flex w-full justify-end text-rose-800">
+            <li class="text-2xl px-2 mx-2 py-1 hover:text-red-600 ">Home</li>
+            <li class="text-2xl px-2 mx-2 py-1 hover:text-red-600 ">Search</li>
+            <li class="text-2xl px-2 mx-2 py-1 hover:text-red-600 ">About</li>
+        </ul>
+    </nav>    
+    <div class="text-2xl mt-12 px-8 text-slate-50">
+        Search Result
+    </div>
+    <div class="pagination">
+        <button onclick="prevPage()" id="prev-button">Previous</button>
+        <button onclick="nextPage()" id="next-button">Next</button>
+    </div>
+    <div id="result" class="flex flex-wrap">
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const input = urlParams.get('search');
+        const encodedName = encodeURIComponent(input);
+        let pageNo = 1;
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
+
+        const fetchInfo = () => {
+            const api = `https://api.jikan.moe/v4/anime?q=${encodedName}&page=${pageNo}`;
+            axios.get(api)
+                .then(response => {
+                    const data = response.data;
+                    console.log(data.data);
+                    lastPage = data.pagination.last_visible_page;
+                    prevButton.disabled = pageNo === 1;
+                    nextButton.disabled = pageNo === data.pagination.last_visible_page;
+                    perPage = data.pagination.items.per_page;
+
+                    const result = document.getElementById('result');
+                    result.innerHTML = '';
+
+                    for (let i = 0; i < perPage; i++) {
+                        const anime = data.data[i];
+                        const card = document.createElement('div');
+                        card.className = 'anime-card'; 
+                        card.innerHTML = `
+                            <h3>${anime.title}</h3>
+                            <p>${anime.aired.string}</p>
+                            <p>${anime.synopsis}</p>
+                            <p>Type: ${anime.type}</p>
+                            <p>Episodes: ${anime.episodes}</p>
+                        `;
+                        result.appendChild(card);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        const nextPage = () => {
+            pageNo++;
+            fetchInfo();
+        }
+
+        const prevPage = () => {
+            if (pageNo > 1) {
+                pageNo--;
+                fetchInfo();
+            }
+        }
+
+        window.onload = fetchInfo(); 
+    </script>
+</body>
+</html>

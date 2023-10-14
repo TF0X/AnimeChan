@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Chan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script >
+    const api = "https://api.jikan.moe/v4/";
+    
+    const seasonsNow = () => {
+    
+        axios.get(`${api}seasons/now`)
+        .then((response) =>
+        {
+            const data = response.data;
+            console.log(data);
+           // const seasonCard = document.getElementById('seasonCard');
+            const card = document.getElementById('card');
+            const total = data.pagination.items.count;
+            for (let i = 0; i < total; i++) {
+                const name = data.data[i].title_english;
+                const image = data.data[i].images.jpg.image_url;
+                const seasonCard = document.createElement('div');
+                seasonCard.innerHTML = `
+                <div class="h-[300px] w-[200px] mx-6 p-3">
+                <img src="${image}"></img>
+                <p class="text-xl py-4 text-slate-50">${name}</p>
+                </div>
+                `;
+                card.appendChild(seasonCard);
+                
+            }
+            
+        }
+        )
+    }
+  
+    const showsTop = () => {
+    
+    axios.get(`${api}top/anime`)
+    .then((response) =>
+    {
+        const data = response.data;
+        console.log(data);
+       // const seasonCard = document.getElementById('seasonCard');
+        const cardTop = document.getElementById('top-card');
+        const total = data.pagination.items.count;
+        for (let i = 0; i < total; i++) {
+            const name = data.data[i].title_english;
+            const image = data.data[i].images.jpg.image_url;
+            const top = document.createElement('div');
+            top.innerHTML = `
+            <div class="h-[300px] w-[200px] mx-6 p-3">
+            <img src="${image}"></img>
+            <p class="text-xl py-4 text-slate-50">${name}</p>
+            </div>
+            `;
+            cardTop.appendChild(top);
+            
+        }
+        
+    }
+    )
+}
+    showsTop();
+    const submitForm = () => {
+        const input = document.getElementById('textInput').value;
+        const url = `search.html?search=${encodeURIComponent(input)}`;
+        window.location.href = url;
+    }
+    </script>
+
+</head>
+<body class="bg-zinc-900" >
+    <div class="bg-sky-800 py-2 text-xl text-gray-300 flex justify-center w-full">Made with &#128151; By Priyansh Singh</div>
+<nav class="flex pt-6 px-6"><div class="text-4xl text-slate-50">Anime<span class="text-rose-800">Chan</span> </div>
+    <ul class=" flex inline-flex w-full justify-end text-rose-800">
+    <li class="text-2xl px-2 mx-2 py-1 hover:text-red-600 ">Home</li>
+    <li class="text-2xl px-2 mx-2 py-1 hover:text-red-600 ">Search </li>
+    <li class="text-2xl px-2 mx-2 py-1 hover:text-red-600 ">About</li>
+</ul>
+</nav>
+<div>
+    <img src="https://i.pinimg.com/originals/a1/87/08/a1870807cee5a81179fb67f834f978bd.jpg"class="w-full mt-6 h-[600px] object-none"
+    alt="" srcset="">
+    <div class="absolute top-1/2 left-1/2 px-12 py-6 inline-flex transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-50 p-4 rounded-lg shadow-md">
+        <input id = "textInput" type="text" placeholder="Search" class="w-full py-2 px-3 border w-3/4 focus:outline-none focus:border-blue-500">
+        <button onclick="submitForm()" class="bg-blue-500 text-white py-2 px-4  hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Search</button>
+    </div>
+</div>
+<div class="my-6 m-4">
+    <span class="text-4xl  text-slate-50">
+          Top Seasonal Anime
+    </span>
+    <div id="card" class="m-2 p-2 pb-[100px] flex hidden:overflow-y overflow-x-scroll">
+</div>
+</div>
+<div class="my-6 m-4">
+    <span class="text-4xl  text-slate-50">
+          Top Anime of all Time
+    </span>
+    <div id="top-card" class="m-2 p-2 pb-[100px] flex hidden:overflow-y overflow-x-scroll">
+</div>
+</div>
+</body>
+</html>
